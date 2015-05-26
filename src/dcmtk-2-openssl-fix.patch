@@ -1,0 +1,33 @@
+This file is part of MXE.
+See index.html for further information.
+
+Contains ad hoc patches for cross building.
+
+From 3466537b9a6302c2c07a2fa9d55ead26cf227a6b Mon Sep 17 00:00:00 2001
+From: MXE
+Date: Wed, 27 May 2015 02:21:09 +0300
+Subject: [PATCH] remove WIN32 conditional for OPENSSL install destination,
+ that conflicts with MXE.
+
+
+diff --git a/dcmnet/apps/CMakeLists.txt b/dcmnet/apps/CMakeLists.txt
+index 4fe5a67..fd05ff6 100644
+--- a/dcmnet/apps/CMakeLists.txt
++++ b/dcmnet/apps/CMakeLists.txt
+@@ -6,13 +6,6 @@ FOREACH(PROGRAM dcmrecv dcmsend echoscu findscu getscu movescu storescp storescu
+   DCMTK_ADD_EXECUTABLE(${PROGRAM} ${PROGRAM})
+ ENDFOREACH(PROGRAM)
+ 
+-# declare installation files
+-IF(WITH_OPENSSL)
+-  IF(WIN32)
+-    INSTALL(FILES ${OPENSSL_BINDIR}/dcmtkeay.dll ${OPENSSL_BINDIR}/dcmtkssl.dll DESTINATION ${DCMTK_INSTALL_BINDIR} COMPONENT bin)
+-  ENDIF(WIN32)
+-ENDIF(WITH_OPENSSL)
+-
+ # make sure executables are linked to the corresponding libraries
+ FOREACH(PROGRAM dcmrecv dcmsend echoscu findscu getscu movescu storescp storescu termscu)
+   DCMTK_TARGET_LINK_MODULES(${PROGRAM} dcmnet dcmdata oflog ofstd)
+-- 
+1.9.1
+
