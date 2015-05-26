@@ -8,7 +8,7 @@ $(PKG)_CHECKSUM := 87ad15e13850f0db7139ad4395f2d4f1502ca288
 $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := ftp://dicom.offis.de/pub/dicom/offis/software/$(PKG)/snapshot/$($(PKG)_FILE)
-$(PKG)_DEPS     := gcc openssl tiff libpng libxml2 zlib
+$(PKG)_DEPS     := gcc openssl tiff libpng libsndfile libxml2 zlib 
 
 define $(PKG)_UPDATE
     $(WGET) -q -O- 'http://dicom.offis.de/dcmtk.php.en' | \
