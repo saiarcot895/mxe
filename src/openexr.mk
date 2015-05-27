@@ -25,7 +25,8 @@ define $(PKG)_BUILD
     echo 'echo $1' > '$(1)/$(ilmbase_SUBDIR)/config.sub'
     cd '$(1)/$(ilmbase_SUBDIR)' && $(SHELL) ./configure \
         --build="`config.guess`" \
-        --disable-shared \
+        --enable-shared \
+	--disable-static \
         --prefix='$(1)/ilmbase' \
         --enable-threading=no \
         --disable-posix-sem \
