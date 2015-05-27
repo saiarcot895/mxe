@@ -1,0 +1,26 @@
+This file is part of MXE.
+See index.html for further information.
+
+Contains ad hoc patches for cross building.
+
+From 84811a198e90af8430dae7f33df03d6659d133bc Mon Sep 17 00:00:00 2001
+From: MXE
+Date: Wed, 27 May 2015 19:19:46 +0300
+Subject: [PATCH] disable Xine
+
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 52e8747..cca4de5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -522,7 +522,6 @@ ELSE()
+     FIND_PACKAGE(COLLADA)
+     FIND_PACKAGE(FBX)
+     FIND_PACKAGE(ZLIB)
+-    FIND_PACKAGE(Xine)
+     FIND_PACKAGE(OpenVRML)
+     FIND_PACKAGE(Performer)
+     FIND_PACKAGE(GDAL)
+-- 
+1.9.1
+
