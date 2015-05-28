@@ -20,7 +20,6 @@ define $(PKG)_BUILD
     cd '$(1)' && autoreconf -fi # The autotools files came with a52dec are _ancient_
     cd '$(1)' && ./configure \
         $(MXE_CONFIGURE_OPTS)
-    $(MAKE) -C '$(1)' -j '$(JOBS)' bin_PROGRAMS= sbin_PROGRAMS= noinst_PROGRAMS= \
-    $(if $(BUILD_SHARED),CFLAGS="${CFLAGS} -Wall -Difndef\ __CRT__NO_INLINE=1")
+    $(MAKE) -C '$(1)' -j '$(JOBS)' bin_PROGRAMS= sbin_PROGRAMS= noinst_PROGRAMS=
     $(MAKE) -C '$(1)' -j 1 install bin_PROGRAMS= sbin_PROGRAMS= noinst_PROGRAMS=
 endef
