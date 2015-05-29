@@ -3,14 +3,14 @@ See index.html for further information.
 
 Contains ad hoc patches for cross building.
 
-From aa9e2fc436b6a30c1ed15b47f3bd8065f3a04946 Mon Sep 17 00:00:00 2001
+From 83c9be4c1908def64b1751ee0d22179dc20eb66c Mon Sep 17 00:00:00 2001
 From: MXE
 Date: Fri, 29 May 2015 08:06:27 -0700
-Subject: [PATCH 1/4] Add ARCHIVE DESTINATION to shared build config.
+Subject: [PATCH 1/3] Add ARCHIVE DESTINATION to the build config.
 
 
 diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
-index 314c222..fc8fbe2 100644
+index 314c222..c67534e 100644
 --- a/simgear/CMakeLists.txt
 +++ b/simgear/CMakeLists.txt
 @@ -54,7 +54,7 @@ if(SIMGEAR_SHARED)
@@ -22,14 +22,23 @@ index 314c222..fc8fbe2 100644
      install(EXPORT SimGearCoreConfig DESTINATION share/SimGearCore)
      
      if(NOT SIMGEAR_HEADLESS)
+@@ -64,7 +64,7 @@ if(SIMGEAR_SHARED)
+         set_property(TARGET SimGearScene PROPERTY SOVERSION ${SIMGEAR_SOVERSION})
+ 
+         # EXPORT SimGearSceneConfig
+-        install(TARGETS SimGearScene LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} )
++		install(TARGETS SimGearScene ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} )
+     #    install(EXPORT SimGearSceneConfig DESTINATION share/SimGearScene)
+     endif()
+     
 -- 
 2.1.4
 
 
-From aa4b23946c3fdaf5a08967ef5ea2a79dded81df7 Mon Sep 17 00:00:00 2001
+From 25fa7b8f3bfbd43601bc7aa1a3812df0f57c546f Mon Sep 17 00:00:00 2001
 From: MXE
 Date: Fri, 29 May 2015 08:13:12 -0700
-Subject: [PATCH 2/4] Correct conditional includes for Windows.
+Subject: [PATCH 2/3] Correct conditional includes for Windows.
 
 
 diff --git a/simgear/io/httpget.cxx b/simgear/io/httpget.cxx
@@ -98,14 +107,14 @@ index 24cad84..f3d66dc 100644
 2.1.4
 
 
-From 59d4bd0c34154e673298b8343cb0569a15cf1af0 Mon Sep 17 00:00:00 2001
+From 6125e763c314b4e79f2058b1aca68aa0a211d07b Mon Sep 17 00:00:00 2001
 From: MXE
 Date: Fri, 29 May 2015 09:42:37 -0700
-Subject: [PATCH 3/4] Add libraries to link to.
+Subject: [PATCH 3/3] Add libraries to link to.
 
 
 diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
-index fc8fbe2..aa5be55 100644
+index c67534e..1478683 100644
 --- a/simgear/CMakeLists.txt
 +++ b/simgear/CMakeLists.txt
 @@ -118,6 +118,7 @@ endif(SIMGEAR_SHARED)
@@ -116,29 +125,6 @@ index fc8fbe2..aa5be55 100644
      ${RT_LIBRARY}
      ${DL_LIBRARY}
      ${EXPAT_LIBRARIES}
--- 
-2.1.4
-
-
-From 14edd753c5c67b212901d7a15211230c31e78166 Mon Sep 17 00:00:00 2001
-From: MXE
-Date: Fri, 29 May 2015 10:31:58 -0700
-Subject: [PATCH 4/4] Scene conditional includes.
-
-
-diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
-index aa5be55..1478683 100644
---- a/simgear/CMakeLists.txt
-+++ b/simgear/CMakeLists.txt
-@@ -64,7 +64,7 @@ if(SIMGEAR_SHARED)
-         set_property(TARGET SimGearScene PROPERTY SOVERSION ${SIMGEAR_SOVERSION})
- 
-         # EXPORT SimGearSceneConfig
--        install(TARGETS SimGearScene LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} )
-+		install(TARGETS SimGearScene ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} )
-     #    install(EXPORT SimGearSceneConfig DESTINATION share/SimGearScene)
-     endif()
-     
 -- 
 2.1.4
 
