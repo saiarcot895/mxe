@@ -26,9 +26,10 @@ define $(PKG)_BUILD
         -DCMAKE_HAVE_PTHREAD_H=OFF \
         -DCMAKE_VERBOSE_MAKEFILE=ON \
         -DPKG_CONFIG_EXECUTABLE='$(PREFIX)/bin/$(TARGET)-pkg-config' \
-        -DSYSTEM_EXPAT=ON \
 		 $(if $(BUILD_STATIC), \
-		 -DSIMGEAR_SHARED=OFF , \
-		 -DSIMGEAR_SHARED=ON )
+		 -DSIMGEAR_SHARED=OFF \
+		 -DSYSTEM_EXPAT=OFF, \
+		 -DSIMGEAR_SHARED=ON \
+		 -DSYSTEM_EXPAT=ON)
     $(MAKE) -C '$(1).build' -j '$(JOBS)' install VERBOSE=1
 endef
