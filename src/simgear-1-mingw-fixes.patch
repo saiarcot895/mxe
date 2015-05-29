@@ -1,0 +1,121 @@
+This file is part of MXE.
+See index.html for further information.
+
+Contains ad hoc patches for cross building.
+
+From aa9e2fc436b6a30c1ed15b47f3bd8065f3a04946 Mon Sep 17 00:00:00 2001
+From: MXE
+Date: Fri, 29 May 2015 08:06:27 -0700
+Subject: [PATCH 1/3] Add ARCHIVE DESTINATION to shared build config.
+
+
+diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
+index 314c222..fc8fbe2 100644
+--- a/simgear/CMakeLists.txt
++++ b/simgear/CMakeLists.txt
+@@ -54,7 +54,7 @@ if(SIMGEAR_SHARED)
+     set_property(TARGET SimGearCore PROPERTY LINKER_LANGUAGE CXX)
+     set_property(TARGET SimGearCore PROPERTY VERSION   ${SIMGEAR_VERSION})
+     set_property(TARGET SimGearCore PROPERTY SOVERSION ${SIMGEAR_SOVERSION})
+-    install(TARGETS SimGearCore EXPORT SimGearCoreConfig LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
++	install(TARGETS SimGearCore EXPORT SimGearCoreConfig ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+     install(EXPORT SimGearCoreConfig DESTINATION share/SimGearCore)
+     
+     if(NOT SIMGEAR_HEADLESS)
+-- 
+2.1.4
+
+
+From aa4b23946c3fdaf5a08967ef5ea2a79dded81df7 Mon Sep 17 00:00:00 2001
+From: MXE
+Date: Fri, 29 May 2015 08:13:12 -0700
+Subject: [PATCH 2/3] Correct conditional includes for Windows.
+
+
+diff --git a/simgear/io/httpget.cxx b/simgear/io/httpget.cxx
+index 876ba14..6ef5449 100644
+--- a/simgear/io/httpget.cxx
++++ b/simgear/io/httpget.cxx
+@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
+         cl.setProxy(proxyHost, proxyPort, proxyAuth);
+     }
+ 
+-#ifndef WIN32
++#ifndef _WIN32
+     signal(SIGPIPE, SIG_IGN);
+ #endif
+ 
+diff --git a/simgear/misc/sg_path.cxx b/simgear/misc/sg_path.cxx
+index 7895e68..0f9e792 100644
+--- a/simgear/misc/sg_path.cxx
++++ b/simgear/misc/sg_path.cxx
+@@ -56,7 +56,11 @@ static const char sgSearchPathSep = ':';
+ #endif
+ 
+ #ifdef _WIN32
++#ifdef _MSC_VER
+ #include <ShlObj.h> // for CSIDL
++#else
++#include <shlobj.h> // for CSIDL
++#endif
+ 
+ static SGPath pathForCSIDL(int csidl, const SGPath& def)
+ {
+diff --git a/simgear/package/md5.h b/simgear/package/md5.h
+index fa0f584..6fb66e1 100644
+--- a/simgear/package/md5.h
++++ b/simgear/package/md5.h
+@@ -19,7 +19,7 @@
+  extern "C" {
+ #endif
+      
+-#if defined(_MSC_VER)
++#if defined(_WIN32)
+ typedef unsigned char    u_int8_t;
+ typedef unsigned int     u_int32_t;
+ typedef unsigned __int64 u_int64_t;
+@@ -49,4 +49,4 @@ void	 SG_MD5Transform(u_int32_t [4], const u_int8_t [MD5_BLOCK_LENGTH]);
+ 
+      
+ 
+- 
+\ No newline at end of file
++ 
+diff --git a/simgear/timing/timestamp.cxx b/simgear/timing/timestamp.cxx
+index 24cad84..f3d66dc 100644
+--- a/simgear/timing/timestamp.cxx
++++ b/simgear/timing/timestamp.cxx
+@@ -82,7 +82,7 @@ static clockid_t getClockId()
+ #endif
+ 
+ void SGTimeStamp::stamp() {
+-#ifdef _WIN32
++#ifdef _MSC_VER
+     unsigned int t;
+     t = timeGetTime();
+     _sec = t / 1000;
+-- 
+2.1.4
+
+
+From 59d4bd0c34154e673298b8343cb0569a15cf1af0 Mon Sep 17 00:00:00 2001
+From: MXE
+Date: Fri, 29 May 2015 09:42:37 -0700
+Subject: [PATCH 3/3] Add libraries to link to.
+
+
+diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
+index fc8fbe2..aa5be55 100644
+--- a/simgear/CMakeLists.txt
++++ b/simgear/CMakeLists.txt
+@@ -118,6 +118,7 @@ endif(SIMGEAR_SHARED)
+ 
+ target_link_libraries(SimGearCore
+     ${ZLIB_LIBRARY}
++	ws2_32 pthread
+     ${RT_LIBRARY}
+     ${DL_LIBRARY}
+     ${EXPAT_LIBRARIES}
+-- 
+2.1.4
+
