@@ -20,8 +20,7 @@ endef
 define $(PKG)_BUILD
     cd '$(1)'/config && autoconf -f
     cd '$(1)' && ./configure \
-        --host='$(TARGET)' \
-        --prefix='$(PREFIX)/$(TARGET)' \
+        $(MXE_CONFIGURE_OPTS) \
         --with-openssl \
         --with-libtiff \
         --with-libpng \
@@ -39,5 +38,3 @@ define $(PKG)_BUILD
 endef
 
 $(PKG)_BUILD_x86_64-w64-mingw32 =
-
-$(PKG)_BUILD_SHARED =
