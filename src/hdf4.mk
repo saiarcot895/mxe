@@ -25,7 +25,7 @@ define $(PKG)_BUILD
         --disable-fortran \
         --disable-netcdf \
     $(if $(BUILD_STATIC), \
-        CPPFLAGS="-DH4_F77_FUNC\(name,NAME\)=NAME -DH4_BUILT_AS_STATIC_LIB=1") \
+        LIBS="-lportablexdr" CPPFLAGS="-DH4_F77_FUNC\(name,NAME\)=NAME -DH4_BUILT_AS_STATIC_LIB=1") \
     AR='$(TARGET)-ar' \
     $(if $(BUILD_SHARED), \
         LIBS="-lportablexdr -lws2_32" CPPFLAGS="-DH4_F77_FUNC\(name,NAME\)=NAME -DH4_BUILT_AS_DYNAMIC_LIB=1 -DBIG_LONGS")
