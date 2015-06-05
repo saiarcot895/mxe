@@ -28,7 +28,8 @@ define $(PKG)_BUILD
         -DPKG_CONFIG_EXECUTABLE='$(PREFIX)/bin/$(TARGET)-pkg-config' \
 		 $(if $(BUILD_STATIC), \
 		 -DSIMGEAR_SHARED=OFF \
-		 -DSYSTEM_EXPAT=OFF, \
+		 -DSYSTEM_EXPAT=OFF \
+		 -DBoost_USE_STATIC_LIBS=ON, \
 		 -DSIMGEAR_SHARED=ON \
 		 -DSYSTEM_EXPAT=ON)
     $(MAKE) -C '$(1).build' -j '$(JOBS)' install VERBOSE=1
