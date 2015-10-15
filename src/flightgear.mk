@@ -4,7 +4,7 @@
 PKG             := flightgear
 $(PKG)_IGNORE   :=
 $(PKG)_VERSION  := 3.4.0
-$(PKG)_CHECKSUM := b919f3e1d6f62439a5ef376c11766657a66ee6c8
+$(PKG)_CHECKSUM := b5645d05b50728a89f091292bc557f440d8f8719dd9cebf7f5bf3fa8ea795780
 $(PKG)_SUBDIR   := flightgear-$($(PKG)_VERSION)
 $(PKG)_FILE     := flightgear-$($(PKG)_VERSION).tar.bz2
 $(PKG)_URL      := http://download.flightgear.org/flightgear/Source/$($(PKG)_FILE)

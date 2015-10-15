@@ -4,7 +4,7 @@
 PKG             := simgear
 $(PKG)_IGNORE   :=
 $(PKG)_VERSION  := 3.4.0
-$(PKG)_CHECKSUM := 3021692be05ca1c983ffa7a4483a74934ec02dbb
+$(PKG)_CHECKSUM := 927d66fe72aacb9dacced4506430bd5fc7726bc8d3d07d6f1866bc4cb11a5894
 $(PKG)_SUBDIR   := simgear-$($(PKG)_VERSION)
 $(PKG)_FILE     := simgear-$($(PKG)_VERSION).tar.bz2
 $(PKG)_URL      := http://mirrors.ibiblio.org/simgear/ftp/Source/$($(PKG)_FILE)
