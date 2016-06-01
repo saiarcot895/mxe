@@ -3,19 +3,17 @@
 
 PKG             := flightgear
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 3.4.0
-$(PKG)_CHECKSUM := b5645d05b50728a89f091292bc557f440d8f8719dd9cebf7f5bf3fa8ea795780
+$(PKG)_VERSION  := 2016.2.1
+$(PKG)_CHECKSUM := b554170ca6b5943fd90496759b055fb60f362ea96f6c46dfff89e3d12c940a94
 $(PKG)_SUBDIR   := flightgear-$($(PKG)_VERSION)
 $(PKG)_FILE     := flightgear-$($(PKG)_VERSION).tar.bz2
-$(PKG)_URL      := http://download.flightgear.org/flightgear/Source/$($(PKG)_FILE)
+$(PKG)_URL      := http://$(SOURCEFORGE_MIRROR)/project/flightgear/release-$(word 1,$(subst ., ,$($(PKG)_VERSION))).$(word 2,$(subst ., ,$($(PKG)_VERSION)))/$($(PKG)_FILE)
 $(PKG)_DEPS     := gcc cmake simgear openscenegraph jpeg libpng plib boost openal freeglut sqlite
 
 define $(PKG)_UPDATE
-    $(WGET) -q -O- 'http://download.flightgear.org/flightgear/Source/' | \
-    $(SED) -n 's,.*flightgear-\([0-9]*\.[0-9]*[02468]\.[^<]*\)\.tar.*,\1,p' | \
-    grep -v rc | \
-    $(SORT) -V | \
-    tail -1
+    $(WGET) -q -O- 'http://sourceforge.net/projects/flightgear/files/' | \
+    $(SED) -n 's,.*/flightgear-\([0-9][^:]*\):.*,\1,p' | \
+    cut -d'.' -f 1-3
 endef
 
 define $(PKG)_BUILD

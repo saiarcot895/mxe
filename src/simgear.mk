@@ -3,19 +3,17 @@
 
 PKG             := simgear
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 3.4.0
-$(PKG)_CHECKSUM := 927d66fe72aacb9dacced4506430bd5fc7726bc8d3d07d6f1866bc4cb11a5894
+$(PKG)_VERSION  := 2016.2.1
+$(PKG)_CHECKSUM := 601d4ef75a7f9e7012f85d6f63219f3e2ef90f98249eaa5d16cc6b1a3c737a0a
 $(PKG)_SUBDIR   := simgear-$($(PKG)_VERSION)
 $(PKG)_FILE     := simgear-$($(PKG)_VERSION).tar.bz2
-$(PKG)_URL      := http://mirrors.ibiblio.org/simgear/ftp/Source/$($(PKG)_FILE)
+$(PKG)_URL      := http://$(SOURCEFORGE_MIRROR)/project/flightgear/release-$(word 1,$(subst ., ,$($(PKG)_VERSION))).$(word 2,$(subst ., ,$($(PKG)_VERSION)))/$($(PKG)_FILE)
 $(PKG)_DEPS     := gcc openscenegraph jpeg boost openal expat cmake freeglut
 
 define $(PKG)_UPDATE
-    $(WGET) -q -O- 'http://mirrors.ibiblio.org/simgear/ftp/Source/' | \
-    $(SED) -n 's,.*simgear-\([0-9]*\.[0-9]*[02468]\.[^<]*\)\.tar.*,\1,p' | \
-    grep -v rc | \
-    $(SORT) -V | \
-    tail -1
+    $(WGET) -q -O- 'http://sourceforge.net/projects/flightgear/files/' | \
+    $(SED) -n 's,.*/flightgear-\([0-9][^:]*\):.*,\1,p' | \
+    cut -d'.' -f 1-3
 endef
 
 define $(PKG)_BUILD
