@@ -8,7 +8,7 @@ $(PKG)_CHECKSUM := b554170ca6b5943fd90496759b055fb60f362ea96f6c46dfff89e3d12c940
 $(PKG)_SUBDIR   := flightgear-$($(PKG)_VERSION)
 $(PKG)_FILE     := flightgear-$($(PKG)_VERSION).tar.bz2
 $(PKG)_URL      := http://$(SOURCEFORGE_MIRROR)/project/flightgear/release-$(word 1,$(subst ., ,$($(PKG)_VERSION))).$(word 2,$(subst ., ,$($(PKG)_VERSION)))/$($(PKG)_FILE)
-$(PKG)_DEPS     := gcc cmake simgear openscenegraph jpeg libpng plib boost openal freeglut sqlite
+$(PKG)_DEPS     := gcc simgear openscenegraph jpeg libpng plib boost openal freeglut sqlite
 
 define $(PKG)_UPDATE
     $(WGET) -q -O- 'http://sourceforge.net/projects/flightgear/files/' | \
