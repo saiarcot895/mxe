@@ -244,3 +244,37 @@ index 1111111..2222222 100644
  endif(SIMGEAR_HEADLESS)
  
  find_package(ZLIB REQUIRED)
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Saikrishna Arcot <saiarcot895@gmail.com>
+Date: Sat, 4 Jun 2016 13:18:38 -0500
+Subject: [PATCH] Have OpenAL use pkg-config as well.
+
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1111111..2222222 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -201,7 +201,12 @@ else()
+     find_package(OpenGL REQUIRED)
+ 
+     if (ENABLE_SOUND)
+-        find_package(OpenAL REQUIRED)
++        if (MINGW)
++            include(FindPkgConfig)
++            pkg_check_modules(OpenAL REQUIRED openal)
++        else()
++            find_package(OpenAL REQUIRED)
++        endif(MINGW)
+         message(STATUS "Sound support: ENABLED")
+     endif(ENABLE_SOUND)
+ 
+@@ -369,7 +374,7 @@ if(WIN32)
+ endif(WIN32)
+ 
+ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS_C} ${MSVC_FLAGS}")
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS_CXX} ${MSVC_FLAGS} ${BOOST_CXX_FLAGS} ${CURL_CFLAGS_OTHER}")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS_CXX} ${MSVC_FLAGS} ${BOOST_CXX_FLAGS} ${CURL_CFLAGS_OTHER} ${OPENAL_CFLAGS_OTHER}")
+ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${MSVC_LD_FLAGS}")
+ 
+ # use BEFORE to ensure local directories are used first,
