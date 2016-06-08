@@ -76,6 +76,7 @@ define $(PKG)_BUILD_mingw-w64
         --host='$(TARGET)' \
         --prefix='$(PREFIX)/$(TARGET)' \
         --enable-sdk=all \
+        $(if $(mingw-w64_SEC_API),--enable-secure-api) \
         --enable-idl
     $(MAKE) -C '$(1).headers-build' install
 
