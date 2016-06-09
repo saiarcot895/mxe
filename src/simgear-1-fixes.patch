@@ -262,7 +262,7 @@ index 1111111..2222222 100644
 -        find_package(OpenAL REQUIRED)
 +        if (MINGW)
 +            include(FindPkgConfig)
-+            pkg_check_modules(OpenAL REQUIRED openal)
++            pkg_check_modules(OPENAL REQUIRED openal)
 +        else()
 +            find_package(OpenAL REQUIRED)
 +        endif(MINGW)
@@ -278,3 +278,90 @@ index 1111111..2222222 100644
  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${MSVC_LD_FLAGS}")
  
  # use BEFORE to ensure local directories are used first,
+diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
+index 1111111..2222222 100644
+--- a/simgear/CMakeLists.txt
++++ b/simgear/CMakeLists.txt
+@@ -134,13 +134,23 @@ target_link_libraries(SimGearCore
+     ${CURL_LIBRARIES})
+ 
+ if(NOT SIMGEAR_HEADLESS)
+-    target_link_libraries(SimGearScene
+-        SimGearCore
+-        ${ZLIB_LIBRARY}
+-        ${OPENSCENEGRAPH_LIBRARIES}
+-        ${OPENAL_LIBRARY}
+-        ${OPENGL_LIBRARY}
+-        ${JPEG_LIBRARY})
++    if (MINGW)
++        target_link_libraries(SimGearScene
++            SimGearCore
++            ${ZLIB_LIBRARY}
++            ${OPENSCENEGRAPH_LIBRARIES}
++            ${OPENAL_LIBRARIES}
++            ${OPENGL_LIBRARY}
++            ${JPEG_LIBRARY})
++    else()
++        target_link_libraries(SimGearScene
++            SimGearCore
++            ${ZLIB_LIBRARY}
++            ${OPENSCENEGRAPH_LIBRARIES}
++            ${OPENAL_LIBRARY}
++            ${OPENGL_LIBRARY}
++            ${JPEG_LIBRARY})
++    endif(MINGW)
+ endif()
+ 
+ if(ENABLE_RTI)
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Saikrishna Arcot <saiarcot895@gmail.com>
+Date: Sun, 5 Jun 2016 10:11:21 -0500
+Subject: [PATCH] Fix CMake shared build for MinGW.
+
+
+diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
+index 1111111..2222222 100644
+--- a/simgear/CMakeLists.txt
++++ b/simgear/CMakeLists.txt
+@@ -56,8 +56,8 @@ if(SIMGEAR_SHARED)
+     set_property(TARGET SimGearCore PROPERTY SOVERSION ${SIMGEAR_SOVERSION})
+     install(TARGETS SimGearCore
+             EXPORT SimGearTargets
+-            LIBRARY DESTINATION
+-            ${CMAKE_INSTALL_LIBDIR})
++            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+     if(NOT SIMGEAR_HEADLESS)
+         add_library(SimGearScene SHARED ${sceneSources})
+@@ -68,8 +68,8 @@ if(SIMGEAR_SHARED)
+         # EXPORT SimGearSceneConfig
+         install(TARGETS SimGearScene
+                 EXPORT SimGearTargets
+-                LIBRARY
+-                DESTINATION ${CMAKE_INSTALL_LIBDIR} )
++                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} )
+     endif()
+ 
+ else()
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Saikrishna Arcot <saiarcot895@gmail.com>
+Date: Sun, 5 Jun 2016 10:32:11 -0500
+Subject: [PATCH] Add winsock library dependency.
+
+
+diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
+index 1111111..2222222 100644
+--- a/simgear/CMakeLists.txt
++++ b/simgear/CMakeLists.txt
+@@ -131,6 +131,7 @@ target_link_libraries(SimGearCore
+     ${EXPAT_LIBRARIES}
+     ${CMAKE_THREAD_LIBS_INIT}
+     ${COCOA_LIBRARY}
++    ${WINSOCK_LIBRARY}
+     ${CURL_LIBRARIES})
+ 
+ if(NOT SIMGEAR_HEADLESS)
