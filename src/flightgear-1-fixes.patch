@@ -3,77 +3,14 @@ See index.html for further information.
 
 Contains ad hoc patches for cross building.
 
-From 6f64d4339746409eaafb57d70a0ccdfb38be6127 Mon Sep 17 00:00:00 2001
-From: MXE
-Date: Fri, 29 May 2015 12:44:43 -0700
-Subject: [PATCH 1/5] Remove compile test, as this causes problems when
- cross-compiling.
-
-
-diff --git a/CMakeModules/FindSimGear.cmake b/CMakeModules/FindSimGear.cmake
-index 1cadbe2..7af906f 100644
---- a/CMakeModules/FindSimGear.cmake
-+++ b/CMakeModules/FindSimGear.cmake
-@@ -189,46 +189,7 @@ SET(CMAKE_REQUIRED_INCLUDES ${SIMGEAR_INCLUDE_DIRS})
- # clear cache, run a fresh compile test every time
- unset(SIMGEAR_COMPILE_TEST CACHE)
- 
--# disable OSG dependencies for test-compiling
--set(CMAKE_REQUIRED_DEFINITIONS "-DNO_OPENSCENEGRAPH_INTERFACE")
--check_cxx_source_runs(
--    "#include <cstdio>
--    #include \"simgear/version.h\"
--    #include \"simgear/math/SGMath.hxx\"
--
--    #define xstr(s) str(s)
--    #define str(s) #s
--
--    #define MIN_MAJOR ${SimGear_FIND_VERSION_MAJOR}
--    #define MIN_MINOR ${SimGear_FIND_VERSION_MINOR}
--    #define MIN_MICRO ${SimGear_FIND_VERSION_PATCH}
--
--    int main() {
--        int major, minor, micro;
--
--        /* printf(%d.%d.%d or greater, , MIN_MAJOR, MIN_MINOR, MIN_MICRO); */
--        printf(\"found %s ... \", xstr(SIMGEAR_VERSION));
--
--        sscanf( xstr(SIMGEAR_VERSION), \"%d.%d.%d\", &major, &minor, &micro );
--
--        if ( (major != MIN_MAJOR) ||
--             (minor != MIN_MINOR) ||
--             (micro != MIN_MICRO) ) {
--         return -1;
--        }
--
--        return 0;
--    }
--    "
--    SIMGEAR_COMPILE_TEST)
--
--if(NOT SIMGEAR_COMPILE_TEST)
--    message(FATAL_ERROR "Oops, you have installed SimGear includes, however test compiling failed. "
--            "Try removing 'CMakeCache.txt' and reconfigure with 'cmake'.")
--endif()
--unset(CMAKE_REQUIRED_DEFINITIONS)
--
- include(FindPackageHandleStandardArgs)
- FIND_PACKAGE_HANDLE_STANDARD_ARGS(SimGear DEFAULT_MSG
--     SIMGEAR_LIBRARIES SIMGEAR_CORE_LIBRARIES SIMGEAR_INCLUDE_DIRS SIMGEAR_COMPILE_TEST)
-+     SIMGEAR_LIBRARIES SIMGEAR_CORE_LIBRARIES SIMGEAR_INCLUDE_DIRS)
- 
--- 
-2.1.4
-
-
-From cacceeff7de04e053b3571d47b827652b1985803 Mon Sep 17 00:00:00 2001
-From: MXE
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: "fix@me" <fix@me>
 Date: Fri, 29 May 2015 13:12:48 -0700
-Subject: [PATCH 2/5] Include gettimeofday in libiax.
+Subject: [PATCH] Include gettimeofday in libiax.
 
 
 diff --git a/3rdparty/iaxclient/lib/libiax2/src/iax.c b/3rdparty/iaxclient/lib/libiax2/src/iax.c
-index 2234b2d..7dfc81b 100644
+index 1111111..2222222 100644
 --- a/3rdparty/iaxclient/lib/libiax2/src/iax.c
 +++ b/3rdparty/iaxclient/lib/libiax2/src/iax.c
 @@ -36,6 +36,14 @@
@@ -91,21 +28,18 @@ index 2234b2d..7dfc81b 100644
  #define	snprintf _snprintf
  
  #if defined(_MSC_VER)
--- 
-2.1.4
 
-
-From 7e32a31ef302bcafabc5a573d1a323def96b5735 Mon Sep 17 00:00:00 2001
-From: MXE
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: "fix@me" <fix@me>
 Date: Fri, 29 May 2015 18:27:55 -0700
-Subject: [PATCH 3/5] Fix linking errors.
+Subject: [PATCH] Fix linking errors.
 
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 96e6ad7..be41b78 100644
+index 1111111..2222222 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -293,7 +293,7 @@ if (ENABLE_QT)
+@@ -310,7 +310,7 @@ if (ENABLE_QT)
  endif (ENABLE_QT)
  ##############################################################################
  
@@ -115,14 +49,14 @@ index 96e6ad7..be41b78 100644
  # FlightGear and SimGear versions need to match
  find_package(SimGear ${FLIGHTGEAR_VERSION} REQUIRED)
 diff --git a/src/Input/CMakeLists.txt b/src/Input/CMakeLists.txt
-index 11b277e..dd72c2a 100644
+index 1111111..2222222 100644
 --- a/src/Input/CMakeLists.txt
 +++ b/src/Input/CMakeLists.txt
 @@ -51,6 +51,7 @@ if(ENABLE_FGJS)
          ${SIMGEAR_CORE_LIBRARIES}
          ${PLIB_LIBRARIES}
          ${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
-+		ws2_32
++        ws2_32
      )
  
      install(TARGETS fgjs RUNTIME DESTINATION bin)
@@ -133,57 +67,15 @@ index 11b277e..dd72c2a 100644
 -flightgear_component(Input "${SOURCES}" "${HEADERS}")
 \ No newline at end of file
 +flightgear_component(Input "${SOURCES}" "${HEADERS}")
-diff --git a/src/Main/CMakeLists.txt b/src/Main/CMakeLists.txt
-index 949b379..4a72386 100644
---- a/src/Main/CMakeLists.txt
-+++ b/src/Main/CMakeLists.txt
-@@ -131,27 +131,28 @@ if (CRASHRPT_FOUND)
- 	target_link_libraries(fgfs ${CRASHRPT_LIBRARY})
- endif()
- 
-+if(ENABLE_FLITE)
-+    if(SYSTEM_HTS_ENGINE)
-+        target_link_libraries(fgfs flite_hts ${HTS_ENGINE_LIBRARIES})
-+    else()
-+        target_link_libraries(fgfs flite_hts hts_engine)
-+    endif()
-+endif()
-+
- target_link_libraries(fgfs
- 	${SQLITE3_LIBRARY}
- 	${SIMGEAR_LIBRARIES}
- 	${OPENSCENEGRAPH_LIBRARIES}
--	${OPENGL_LIBRARIES}
- 	${PLIB_LIBRARIES}
-+	${OPENGL_LIBRARIES}
- 	${HLA_LIBRARIES}
- 	${EVENT_INPUT_LIBRARIES}
- 	${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
- 	${SIMGEAR_SCENE_LIBRARY_DEPENDENCIES}
- 	${PLATFORM_LIBS}
-+	ws2_32
- )
- 
--if(ENABLE_FLITE)
--    if(SYSTEM_HTS_ENGINE)
--        target_link_libraries(fgfs flite_hts ${HTS_ENGINE_LIBRARIES})
--    else()
--        target_link_libraries(fgfs flite_hts hts_engine)
--    endif()
--endif()
--
- if (Qt5Core_FOUND)
-     target_link_libraries(fgfs Qt5::Widgets fglauncher)
- endif()
 diff --git a/utils/GPSsmooth/CMakeLists.txt b/utils/GPSsmooth/CMakeLists.txt
-index a76c952..6d6132a 100644
+index 1111111..2222222 100644
 --- a/utils/GPSsmooth/CMakeLists.txt
 +++ b/utils/GPSsmooth/CMakeLists.txt
 @@ -21,6 +21,7 @@ target_link_libraries(GPSsmooth
      ${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
      ${PLIB_SG_LIBRARY}
      ${PLIB_UL_LIBRARY}
-+	ws2_32
++    ws2_32
  )
  
  target_link_libraries(MIDGsmooth
@@ -191,7 +83,7 @@ index a76c952..6d6132a 100644
      ${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
      ${PLIB_SG_LIBRARY}
      ${PLIB_UL_LIBRARY}
-+	ws2_32
++    ws2_32
  )
  
  target_link_libraries(UGsmooth
@@ -199,36 +91,19 @@ index a76c952..6d6132a 100644
      ${PLIB_SG_LIBRARY}
      ${PLIB_UL_LIBRARY}
      ${ZLIB_LIBRARY}
-+	ws2_32
++    ws2_32
  )
  
  install(TARGETS GPSsmooth MIDGsmooth UGsmooth RUNTIME DESTINATION bin)
-diff --git a/utils/fgpanel/CMakeLists.txt b/utils/fgpanel/CMakeLists.txt
-index f7ac79c..f15beaf 100644
---- a/utils/fgpanel/CMakeLists.txt
-+++ b/utils/fgpanel/CMakeLists.txt
-@@ -28,8 +28,8 @@ if(GLUT_FOUND)
- 		${PNG_LIBRARIES}
- 		${GLUT_LIBRARIES}
- 		${SIMGEAR_CORE_LIBRARIES}
--		${OPENGL_LIBRARIES}
- 		${PLIB_LIBRARIES}
-+		${OPENGL_LIBRARIES}
- 		${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
- 	)
- 
--- 
-2.1.4
 
-
-From 502d9bbcb47530a9bf6e895a9fcb3bcdaeff82d3 Mon Sep 17 00:00:00 2001
-From: MXE
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: "fix@me" <fix@me>
 Date: Fri, 29 May 2015 19:12:32 -0700
-Subject: [PATCH 4/5] Fix header inclusion name.
+Subject: [PATCH] Fix header inclusion name.
 
 
 diff --git a/src/GUI/WindowsFileDialog.cxx b/src/GUI/WindowsFileDialog.cxx
-index b082efa..a04d900 100644
+index 1111111..2222222 100644
 --- a/src/GUI/WindowsFileDialog.cxx
 +++ b/src/GUI/WindowsFileDialog.cxx
 @@ -3,7 +3,11 @@
@@ -251,7 +126,7 @@ index b082efa..a04d900 100644
 \ No newline at end of file
 +}
 diff --git a/src/Main/fg_init.cxx b/src/Main/fg_init.cxx
-index 1d648a8..c25a006 100644
+index 1111111..2222222 100644
 --- a/src/Main/fg_init.cxx
 +++ b/src/Main/fg_init.cxx
 @@ -34,7 +34,11 @@
@@ -267,21 +142,18 @@ index 1d648a8..c25a006 100644
  #  define isatty _isatty
  #else
  // for open() and options
--- 
-2.1.4
 
-
-From 21f90af22fa79cc883ffc2974d5a39a36656d70e Mon Sep 17 00:00:00 2001
-From: MXE
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: "fix@me" <fix@me>
 Date: Fri, 29 May 2015 19:28:19 -0700
-Subject: [PATCH 5/5] Add additional underscore, so that it compiles on GCC.
+Subject: [PATCH] Add additional underscore, so that it compiles on GCC.
 
 
 diff --git a/src/Main/main.cxx b/src/Main/main.cxx
-index ebcb6bb..cae59bd 100644
+index 1111111..2222222 100644
 --- a/src/Main/main.cxx
 +++ b/src/Main/main.cxx
-@@ -370,7 +370,7 @@ static void ATIScreenSizeHack()
+@@ -408,7 +408,7 @@ static void ATIScreenSizeHack()
  // Propose NVIDIA Optimus to use high-end GPU
  #if defined(SG_WINDOWS)
  extern "C" {
@@ -290,6 +162,123 @@ index ebcb6bb..cae59bd 100644
  }
  #endif
  
--- 
-2.1.4
 
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Saikrishna Arcot <saiarcot895@gmail.com>
+Date: Thu, 9 Jun 2016 10:27:29 -0500
+Subject: [PATCH] Reorder an #include.
+
+
+diff --git a/utils/fgpanel/FGGLApplication.cxx b/utils/fgpanel/FGGLApplication.cxx
+index 1111111..2222222 100644
+--- a/utils/fgpanel/FGGLApplication.cxx
++++ b/utils/fgpanel/FGGLApplication.cxx
+@@ -22,6 +22,7 @@
+ 
+ #include "FGGLApplication.hxx"
+ #include <simgear/compiler.h>
++#include <iostream>
+ 
+ #ifdef HAVE_WINDOWS_H
+ #include <windows.h>
+@@ -35,7 +36,6 @@
+ #include <GL/glut.h>
+ #endif
+ 
+-#include <iostream>
+ #include <exception>
+ #include <stdio.h>
+ 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Saikrishna Arcot <saiarcot895@gmail.com>
+Date: Thu, 9 Jun 2016 10:31:37 -0500
+Subject: [PATCH] Correct #include file name.
+
+
+diff --git a/src/FDM/JSBSim/input_output/FGfdmSocket.cpp b/src/FDM/JSBSim/input_output/FGfdmSocket.cpp
+index 1111111..2222222 100644
+--- a/src/FDM/JSBSim/input_output/FGfdmSocket.cpp
++++ b/src/FDM/JSBSim/input_output/FGfdmSocket.cpp
+@@ -39,7 +39,7 @@ INCLUDES
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+ 
+ #if defined(_MSC_VER) || defined(__MINGW32__)
+-#include <WS2tcpip.h>
++#include <ws2tcpip.h>
+ #else
+ #include <fcntl.h>
+ #endif
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Saikrishna Arcot <saiarcot895@gmail.com>
+Date: Thu, 9 Jun 2016 10:37:53 -0500
+Subject: [PATCH] Force static library.
+
+
+diff --git a/src/GUI/CMakeLists.txt b/src/GUI/CMakeLists.txt
+index 1111111..2222222 100644
+--- a/src/GUI/CMakeLists.txt
++++ b/src/GUI/CMakeLists.txt
+@@ -80,7 +80,7 @@ if (HAVE_QT)
+     qt5_add_resources(qrc_sources resources.qrc)
+ 
+ 
+-    add_library(fglauncher QtLauncher.cxx
++	add_library(fglauncher STATIC QtLauncher.cxx
+                             QtLauncher.hxx
+                             QtLauncher_private.hxx
+                             BaseDiagram.cxx
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Saikrishna Arcot <saiarcot895@gmail.com>
+Date: Thu, 9 Jun 2016 11:03:27 -0500
+Subject: [PATCH] Move around library linking order.
+
+
+diff --git a/src/Main/CMakeLists.txt b/src/Main/CMakeLists.txt
+index 1111111..2222222 100644
+--- a/src/Main/CMakeLists.txt
++++ b/src/Main/CMakeLists.txt
+@@ -133,6 +133,19 @@ endif()
+ if(X11_FOUND)
+     target_link_libraries(fgfs ${X11_LIBRARIES})
+ endif()
++
++if(ENABLE_FLITE)
++    if(SYSTEM_HTS_ENGINE)
++        target_link_libraries(fgfs flite_hts ${HTS_ENGINE_LIBRARIES})
++    else()
++        target_link_libraries(fgfs flite_hts hts_engine)
++    endif()
++endif()
++
++if (Qt5Core_FOUND)
++    target_link_libraries(fgfs Qt5::Widgets fglauncher)
++endif()
++
+ target_link_libraries(fgfs
+ 	${SQLITE3_LIBRARY}
+ 	${SIMGEAR_LIBRARIES}
+@@ -145,20 +158,9 @@ target_link_libraries(fgfs
+ 	${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
+ 	${SIMGEAR_SCENE_LIBRARY_DEPENDENCIES}
+ 	${PLATFORM_LIBS}
++	ws2_32
+ )
+ 
+-if(ENABLE_FLITE)
+-    if(SYSTEM_HTS_ENGINE)
+-        target_link_libraries(fgfs flite_hts ${HTS_ENGINE_LIBRARIES})
+-    else()
+-        target_link_libraries(fgfs flite_hts hts_engine)
+-    endif()
+-endif()
+-
+-if (Qt5Core_FOUND)
+-    target_link_libraries(fgfs Qt5::Widgets fglauncher)
+-endif()
+-
+ if (APPLE)  
+     install(TARGETS fgfs BUNDLE DESTINATION .)
+ else()
