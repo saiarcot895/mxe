@@ -192,15 +192,29 @@ index 1111111..2222222 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Saikrishna Arcot <saiarcot895@gmail.com>
 Date: Thu, 2 Jun 2016 15:00:23 -0500
-Subject: [PATCH] Use pkg-config instead of CMake to find curl, since the CMake
- file doesn't work for static builds.
+Subject: [PATCH] Use pkg-config instead of CMake to find curl and openal,
+ since the CMake file doesn't work for static builds.
 
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 1111111..2222222 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -209,7 +209,13 @@ else()
+@@ -201,7 +201,12 @@ else()
+     find_package(OpenGL REQUIRED)
+ 
+     if (ENABLE_SOUND)
+-        find_package(OpenAL REQUIRED)
++        if (MINGW)
++            include(FindPkgConfig)
++			pkg_check_modules(OPENAL REQUIRED openal)
++        else()
++            find_package(OpenAL REQUIRED)
++        endif(MINGW)
+         message(STATUS "Sound support: ENABLED")
+     endif(ENABLE_SOUND)
+ 
+@@ -209,7 +214,13 @@ else()
  endif(SIMGEAR_HEADLESS)
  
  find_package(ZLIB REQUIRED)
@@ -215,65 +229,11 @@ index 1111111..2222222 100644
  
  if (SYSTEM_EXPAT)
      message(STATUS "Requested to use system Expat library, forcing SIMGEAR_SHARED to true")
-@@ -363,7 +369,7 @@ if(WIN32)
+@@ -363,7 +374,7 @@ if(WIN32)
  endif(WIN32)
  
  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS_C} ${MSVC_FLAGS}")
 -set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS_CXX} ${MSVC_FLAGS} ${BOOST_CXX_FLAGS}")
-+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS_CXX} ${MSVC_FLAGS} ${BOOST_CXX_FLAGS} ${CURL_CFLAGS_OTHER}")
- set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${MSVC_LD_FLAGS}")
- 
- # use BEFORE to ensure local directories are used first,
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Saikrishna Arcot <saiarcot895@gmail.com>
-Date: Sat, 4 Jun 2016 12:59:53 -0500
-Subject: [PATCH] Reorder OSG libraries as a quick hack for static linking.
-
-
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1111111..2222222 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -205,7 +205,7 @@ else()
-         message(STATUS "Sound support: ENABLED")
-     endif(ENABLE_SOUND)
- 
--    find_package(OpenSceneGraph 3.2.0 REQUIRED osgText osgSim osgDB osgParticle osgGA osgViewer osgUtil)
-+    find_package(OpenSceneGraph 3.2.0 REQUIRED osgText osgSim osgParticle osgViewer osgGA osgDB osgUtil)
- endif(SIMGEAR_HEADLESS)
- 
- find_package(ZLIB REQUIRED)
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Saikrishna Arcot <saiarcot895@gmail.com>
-Date: Sat, 4 Jun 2016 13:18:38 -0500
-Subject: [PATCH] Have OpenAL use pkg-config as well.
-
-
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1111111..2222222 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -201,7 +201,12 @@ else()
-     find_package(OpenGL REQUIRED)
- 
-     if (ENABLE_SOUND)
--        find_package(OpenAL REQUIRED)
-+        if (MINGW)
-+            include(FindPkgConfig)
-+            pkg_check_modules(OPENAL REQUIRED openal)
-+        else()
-+            find_package(OpenAL REQUIRED)
-+        endif(MINGW)
-         message(STATUS "Sound support: ENABLED")
-     endif(ENABLE_SOUND)
- 
-@@ -369,7 +374,7 @@ if(WIN32)
- endif(WIN32)
- 
- set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS_C} ${MSVC_FLAGS}")
--set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS_CXX} ${MSVC_FLAGS} ${BOOST_CXX_FLAGS} ${CURL_CFLAGS_OTHER}")
 +set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS_CXX} ${MSVC_FLAGS} ${BOOST_CXX_FLAGS} ${CURL_CFLAGS_OTHER} ${OPENAL_CFLAGS_OTHER}")
  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${MSVC_LD_FLAGS}")
  
@@ -316,6 +276,26 @@ index 1111111..2222222 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Saikrishna Arcot <saiarcot895@gmail.com>
+Date: Sat, 4 Jun 2016 12:59:53 -0500
+Subject: [PATCH] Reorder OSG libraries as a quick hack for static linking.
+
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1111111..2222222 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -210,7 +210,7 @@ else()
+         message(STATUS "Sound support: ENABLED")
+     endif(ENABLE_SOUND)
+ 
+-    find_package(OpenSceneGraph 3.2.0 REQUIRED osgText osgSim osgDB osgParticle osgGA osgViewer osgUtil)
++    find_package(OpenSceneGraph 3.2.0 REQUIRED osgText osgSim osgParticle osgViewer osgGA osgDB osgUtil)
+ endif(SIMGEAR_HEADLESS)
+ 
+ find_package(ZLIB REQUIRED)
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Saikrishna Arcot <saiarcot895@gmail.com>
 Date: Sun, 5 Jun 2016 10:11:21 -0500
 Subject: [PATCH] Fix CMake shared build for MinGW.
 
@@ -324,24 +304,26 @@ diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
 index 1111111..2222222 100644
 --- a/simgear/CMakeLists.txt
 +++ b/simgear/CMakeLists.txt
-@@ -56,8 +56,8 @@ if(SIMGEAR_SHARED)
+@@ -56,8 +56,9 @@ if(SIMGEAR_SHARED)
      set_property(TARGET SimGearCore PROPERTY SOVERSION ${SIMGEAR_SOVERSION})
      install(TARGETS SimGearCore
              EXPORT SimGearTargets
 -            LIBRARY DESTINATION
 -            ${CMAKE_INSTALL_LIBDIR})
 +            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 +            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
  
      if(NOT SIMGEAR_HEADLESS)
          add_library(SimGearScene SHARED ${sceneSources})
-@@ -68,8 +68,8 @@ if(SIMGEAR_SHARED)
+@@ -68,8 +69,9 @@ if(SIMGEAR_SHARED)
          # EXPORT SimGearSceneConfig
          install(TARGETS SimGearScene
                  EXPORT SimGearTargets
 -                LIBRARY
 -                DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 +                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++                RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 +                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} )
      endif()
  
@@ -357,7 +339,7 @@ diff --git a/simgear/CMakeLists.txt b/simgear/CMakeLists.txt
 index 1111111..2222222 100644
 --- a/simgear/CMakeLists.txt
 +++ b/simgear/CMakeLists.txt
-@@ -131,6 +131,7 @@ target_link_libraries(SimGearCore
+@@ -133,6 +133,7 @@ target_link_libraries(SimGearCore
      ${EXPAT_LIBRARIES}
      ${CMAKE_THREAD_LIBS_INIT}
      ${COCOA_LIBRARY}
